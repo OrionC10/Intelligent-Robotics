@@ -1,0 +1,46 @@
+// 4 LED rotation
+// Matthew Crosby
+// 8/27/2024
+// This program will cycle through 4 leds with the input of a button
+
+int LEDToggled = 0;
+int LEDArray[4] = {16, 17, 18, 19};
+
+void setup() {
+  // put your setup code here, to run once:
+  pinMode(15,INPUT_PULLUP);
+  pinMode(16,OUTPUT); //red
+  pinMode(17,OUTPUT); //yellow
+  pinMode(18,OUTPUT); //blue
+  pinMode(19,OUTPUT); //green
+}
+
+void loop() {
+  // put your main code here, to run repeatedly:
+  while (digitalRead(15) == 0) {
+    //need to toggle a different light only once while 
+    //toggle light
+    //special case when last led is on
+    if (LEDToggled == 4) {
+      digitalWrite(LEDArray[LEDToggled - 1], LOW);
+      LEDToggled = 0;
+    }
+    else {
+      digitalWrite(LEDArray[LEDToggled % 4], HIGH);
+      if (LEDToggled % 4 == 0) {
+        //special case for last led in array
+        digitalWrite(LEDArray[3], LOW);
+      }
+      else {
+        digitalWrite(LEDArray[LEDToggled % 4 - 1], LOW);
+        }
+    
+      ++LEDToggled;
+      //wait for button to be un pressed
+    }
+    while (digitalRead(15) == 0) {
+      delay(50);
+    }
+  }
+  delay(50);  //just to limit input
+}
