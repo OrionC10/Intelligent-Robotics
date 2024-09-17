@@ -1,0 +1,99 @@
+//Homework2
+//Matthew Crobsy
+//Intelligent Robotics
+//9/17/2024
+//This code is to demonstrate that I can use the 3 components (Sonar, Temp, and Buzzer)
+
+//importing librarys
+#include <Arduino.h>
+#include <U8g2lib.h>
+#include <Wire.h>
+#include <string>
+#include <DHT11.h>
+#include <iomanip>
+U8G2_SSD1306_128X64_NONAME_F_HW_I2C u8g2(U8G2_R0, /* reset=*/ U8X8_PIN_NONE); //defines what screen we are using
+
+//setup for sonar
+const int trigPin = 15;
+const int echoPin = 14;
+float duration;
+int distance; 
+DHT11 dht11(16);
+
+const int buzzerPin = 17;
+
+void setup(void) {
+  u8g2.begin();
+  pinMode(trigPin, OUTPUT);  
+	pinMode(echoPin, INPUT);  
+	Serial.begin(9600);  
+  pinMode(buzzerPin, OUTPUT);
+}
+
+//int rad = 1;
+
+
+void loop(void) {
+
+  //sonar testing
+  //sends out a ping
+  digitalWrite(trigPin, LOW);  
+	delayMicroseconds(2);  
+	digitalWrite(trigPin, HIGH);  
+	delayMicroseconds(10);  
+	digitalWrite(trigPin, LOW);
+  //listens and inputs how long it took for the ping to return
+  duration = pulseIn(echoPin, HIGH); 
+  //calculate distance in cm
+  distance = (duration*.0343)/2;  
+
+//buzzes if the distance is too great
+  if (distance > 3000) {
+    //sound problem buzzer
+    tone(buzzerPin, 1000);
+    delay(100);
+  }
+  else {
+    noTone(buzzerPin);
+    delay(100);
+  }
+
+  //Serial.print(distance);
+  //Serial.print("\n");
+  u8g2.clearBuffer();
+  u8g2.setFont(u8g2_font_ncenB08_tr);
+  std::string Combined;
+  Combined += std::to_string(distance);
+  Combined += "cm";
+  u8g2.drawStr(0, 20, Combined.c_str());
+
+  //temp sensor
+  int temp = dht11.readTemperature();
+  temp = (temp * 9/5) + 32; //I know it will lose accuracy here I just do not want to deal with printing a bunch of numbers on the OLED screen
+  std::string tempString;
+  tempString = std::to_string(temp);
+  tempString += " F";
+  //temp sensor print
+  u8g2.drawStr(0,40, tempString.c_str());
+
+  
+
+
+
+  u8g2.sendBuffer();
+  
+
+
+  //u8g2.clearBuffer();                   //need to clear buffer for the screen
+  //u8g2.setFont(u8g2_font_ncenB08_tr);   //sets font
+  //u8g2.drawStr(0, 20, "ATR lab");       //x,y,string to draw
+  //u8g2.sendBuffer();                    //writes to buffer aka screen
+  /*
+  if(rad < 100) {
+    u8g2.drawCircle(64,32,rad);
+    u8g2.sendBuffer();
+    rad++;
+  }
+  else {rad = 1;}
+  */
+}
