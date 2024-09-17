@@ -1,0 +1,21 @@
+//project_1_auto_fan
+//Matthew Crosby
+//This is the code for project 1, I am making a fan that automaticly rotates to a person
+//when the temperature is above a threshold, there is a button to toggle on or off for 
+
+#include <Servo.h>
+
+void setup() {
+  //setting up outputs for components
+  //servo
+  myservo.attach(15);
+  pinMode()
+  //motion sensor_L
+  
+
+}
+
+void loop() {
+  // put your main code here, to run repeatedly:
+
+}
