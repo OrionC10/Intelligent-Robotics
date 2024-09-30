@@ -4,18 +4,126 @@
 //when the temperature is above a threshold, there is a button to toggle on or off for 
 
 #include <Servo.h>
+#include <DHT11.h>
+
+int servoPin = 11;
+int motionL = 2;
+int motionR = 14;
+//int temp
+int button = 5;
+int ledL = 21;
+int ledC = 18;
+int ledR = 16;
+int EVA = 17;
+int mot1 = 19;
+int mot2 = 20;
+
+Servo myservo;
+int pos = 90;
+
+DHT11 dht11(6);
+
 
 void setup() {
   //setting up outputs for components
   //servo
-  myservo.attach(15);
-  pinMode()
-  //motion sensor_L
   
+  myservo.attach(11);   //control pin slot 15
+  pinMode(10, OUTPUT);  //5v supply slot 14 (slot 13 is ground)
+  digitalWrite(10, HIGH);
+  //motion sensor_L
+  pinMode(2, INPUT);      //control pin slot 4
+  //motion sensor_R
+  pinMode(14, INPUT);
+  //temp sensor
+  pinMode(7, OUTPUT);    //set supply pin slot 10
+  digitalWrite(7, HIGH); //supply for temp, 8 is ground
+    //set control pin
+  //button
+  pinMode(5, INPUT);  //this will read from the button to toggle on or off, slot 7
 
+  //Motor Driver Setup
+  pinMode(EVA, OUTPUT);
+  pinMode(mot1, OUTPUT);
+  pinMode(mot2, OUTPUT);
+
+  //makes motor drive forward
+  digitalWrite(mot1, HIGH);
+  digitalWrite(mot2, LOW);
+  
+  //pin for temp sensor
+  pinMode(7, OUTPUT);
+  digitalWrite(7,HIGH);
+
+
+  //LED setup
+  pinMode(ledL, OUTPUT);
+  pinMode(ledC, OUTPUT);
+  pinMode(ledR, OUTPUT);
 }
 
 void loop() {
   // put your main code here, to run repeatedly:
+  int motionLRead = digitalRead(motionL);
+  int motionRRead = digitalRead(motionR);
+  if(motionLRead == HIGH && motionRRead == HIGH) {
+    //Serial.print("Both Detected\n");
+    digitalWrite(ledC, HIGH);
+    digitalWrite(ledL, LOW);
+    digitalWrite(ledR, LOW);
+  }
+  else if (motionRRead == HIGH) {
+    //Serial.print("Right only\n");
+    digitalWrite(ledC, LOW);
+    digitalWrite(ledL, LOW);
+    digitalWrite(ledR, HIGH);
 
+    decreaseServo();
+  }
+  else if (motionLRead == HIGH) {
+    //Serial.print("Left only\n");
+    digitalWrite(ledC, LOW);
+    digitalWrite(ledL, HIGH);
+    digitalWrite(ledR, LOW);
+
+    increaseServo();
+  }
+  else {
+    digitalWrite(ledC, LOW);
+    digitalWrite(ledL, LOW);
+    digitalWrite(ledR, LOW);
+    //Serial.print("Not Detected\n");
+  }
+  // Serial.print(digitalRead(button));
+  // Serial.print("\n");
+  myservo.write(pos);
+
+  int temp = dht11.readTemperature();
+  //temp = (temp * 9/5) + 32;
+  Serial.print(temp);
+  Serial.print("\n");
+  if (temp > 25) {
+    digitalWrite(EVA, HIGH);
+  }
+  else {
+    digitalWrite(EVA, LOW);
+  }
+
+  delay(10);
+}
+
+int increaseServo() {
+  if (pos < 180) {
+    pos += 2;
+  }
+  else {}
+  return 0;
+}
+
+int decreaseServo() {
+  if (pos > 0) {
+    pos -= 2;
+  }
+  else {}
+  return 0;
 }
